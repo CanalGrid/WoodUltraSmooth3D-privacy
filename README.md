@@ -3,58 +3,47 @@
 Public pages for the Android game **Woodturning Ultra Smooth 3D** (`com.canalgrid.WoodUltraSmooth3D`) by Canal Grid.
 Static HTML, no build step, no dependencies — served by GitHub Pages.
 
-| Page | File | URL once Pages is on |
+| Page | File | URL |
 |---|---|---|
 | Privacy policy | `privacy/index.html` | `https://canalgrid.github.io/WoodUltraSmooth3D-privacy/privacy/` |
+| Privacy policy (root copy) | `index.html` | `https://canalgrid.github.io/WoodUltraSmooth3D-privacy/` |
 | Feedback & support | `privacy/feedback.html` | `https://canalgrid.github.io/WoodUltraSmooth3D-privacy/privacy/feedback.html` |
 | Delete your data | `privacy/delete-account.html` | `https://canalgrid.github.io/WoodUltraSmooth3D-privacy/privacy/delete-account.html` |
-| Root redirect | `index.html` | `https://canalgrid.github.io/WoodUltraSmooth3D-privacy/` → privacy policy |
 
-## Turning on GitHub Pages
+`index.html` is `privacy/index.html` with its links pointing into `privacy/`. Edit `privacy/index.html`, then regenerate:
 
-Repository → **Settings → Pages** → Source: *Deploy from a branch* → Branch: `main`, folder `/ (root)` → **Save**.
-The site is usually live a minute or two later.
+```sh
+sed -e 's|href="delete-account.html"|href="privacy/delete-account.html"|g; s|href="feedback.html"|href="privacy/feedback.html"|g' privacy/index.html > index.html
+```
 
 ## Where these URLs go in Play Console
 
-- **App content → Privacy policy** — the privacy policy URL (required before you can publish)
-- **Store listing → Support → Website** — either page works; the feedback page is friendlier
-- **Store listing → Support → Email** — `vmwnpela@gmail.com`
-- **App content → Data deletion** — the "Delete your data" URL (required once you declare the app collects any data)
+- **App content → Privacy policy**: the privacy policy URL
+- **Store listing → Support → Website**: the feedback page
+- **Store listing → Support → Email**: `vmwnpela@gmail.com`
+- **App content → Data deletion**: the "Delete your data" URL
 
-## Check before you publish
+## What the policy describes (v1.2.0, October 2026)
 
-Unlike Color Box, this game ships with real purchases and with diagnostics, so the policy
-makes claims that have to match the build. Confirm each of these:
+The game is a Capacitor (web) app. It ships:
 
-- [ ] **Analytics/crash SDK names.** The pages name **Firebase Crashlytics** and **Unity Analytics**.
-      If the build actually uses something else (Unity Cloud Diagnostics only, GameAnalytics,
-      Adjust, AppsFlyer…), replace the names and the two policy links in
-      `privacy/index.html` §6 and `privacy/delete-account.html`. Naming an SDK you do not ship —
-      or omitting one you do — is the most common cause of a Data Safety rejection.
-- [ ] **Data Safety form matches.** Declaring analytics means you must tick *Analytics* / *Crash logs*
-      and *App interactions* in Play Console, and *Purchase history* for the IAP.
-      The Data Safety form and this policy have to tell the same story.
-- [ ] **Ad format list.** §4 describes a banner, an occasional interstitial and rewarded video.
-      Trim whatever the game does not show.
-- [ ] **Saved-data list.** §2 lists projects, smoothness scores, stars, best times, gallery pieces,
-      unlocked tools/woods/finishes, tutorial flag and settings. Delete any line the game
-      does not actually store — an over-broad list is still an inaccurate one.
-- [ ] **Restore Purchases exists.** Three pages tell players to tap it in the settings screen.
-      If the button is not there, add it or remove those sentences.
-- [ ] **Languages.** The feedback page asks for translation corrections without naming languages.
-      Once the shipping language list is settled, name them there.
+- **Google AdMob**: banner, interstitial, app-open and rewarded ads, with Google's UMP consent form (EEA/UK/CH) and a Privacy Options button in Settings
+- **Google Play Billing**: one product, `remove_ads` (one-time), with Restore Purchase in Settings
+- **Local notifications**: a daily "free wood" reminder for Remove Ads owners only
+- **Share**: a picture of a Collection piece, drawn on the device and handed to Android's share sheet
+
+No analytics, crash-reporting or attribution SDK, no server, no account. Progress lives in the app's local storage.
+
+Data Safety form to match: **Device or other IDs** (advertising ID), plus approximate location, app interactions and diagnostics collected by the AdMob SDK, for *Advertising or marketing*, *Analytics* and *Fraud prevention, security and compliance*. **Purchase history** for the IAP.
 
 ## Keeping it accurate
 
-The policy describes what the app actually does, so it has to be revisited when the app changes.
-Update it if any of these become true:
+Revisit the pages when any of these change:
 
-- an analytics, attribution or crash-reporting SDK is added, removed or swapped
-- new in-app purchase types are added (subscriptions in particular — they need their own wording)
-- cloud save or Google Play Games sign-in is enabled (there is none today; either one would add
-  an account and change the deletion page substantially)
-- ads are removed entirely, or a different ad provider replaces Unity LevelPlay
-- the game starts saving photos of finished pieces to the device gallery (that touches storage permissions)
+- an analytics, attribution or crash-reporting SDK is added
+- ads are removed, or another ad network or mediation is added to AdMob
+- new in-app products (subscriptions in particular)
+- cloud save or Google Play Games sign-in (would add an account and change the deletion page)
+- what the save holds (see `src/core/save.js` in the game)
 
 Change the "Last updated" date in `privacy/index.html` and `privacy/delete-account.html` whenever the text changes.
